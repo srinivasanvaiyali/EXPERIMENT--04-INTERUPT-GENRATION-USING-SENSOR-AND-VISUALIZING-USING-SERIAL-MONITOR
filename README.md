@@ -1,8 +1,8 @@
 ###  DATE: 
 
-###  NAME: 
-###  ROLL NO :
-###  DEPARTMENT: 
+###  NAME: srinivasan.v
+###  ROLL NO :212222043008
+###  DEPARTMENT: BE CSE
 
 
 # EXPERIMENT--04-INTERUPT-GENRATION-USING-SENSOR-AND-VISUALIZING-USING-SERIAL-MONITOR
@@ -117,14 +117,133 @@ The diagram below shows how the GPIO pins are connected to the 16 interrupt line
 
   
 
-## STM 32 CUBE PROGRAM :
+
+#include "main.h"   
+#include"stdbool.h"   
+#include "stdio.h"   
+UART_HandleTypeDef huart1;    
+void SystemClock_Config(void);     
+static void MX_GPIO_Init(void);   
+static void MX_USART1_UART_Init(void);   
+#if defined (__ICCARM__) || defined (__ARMCC_VERSION)    
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)    
+#elif defined(__GNUC__)   
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)   
+#endif    
+int main(void)   
+{   
+  HAL_Init();   
+  SystemClock_Config();   
+  MX_GPIO_Init();   
+  MX_USART1_UART_Init();   
+  while (1)    
+  {   
+  }   
+}   
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)   
+{    
+	if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_6)==0)   
+	{   
+		printf("IR ON  \n");    
+	}    
+	else   
+	{    
+		printf("IR OFF \n");   
+	}    
+}   
+void SystemClock_Config(void)   
+{   
+  RCC_OscInitTypeDef RCC_OscInitStruct = {0};    
+  RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};    
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);    
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;    
+  RCC_OscInitStruct.MSIState = RCC_MSI_ON;   
+  RCC_OscInitStruct.MSICalibrationValue = RCC_MSICALIBRATION_DEFAULT;    
+  RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;   
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;    
+  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)   
+  {    
+    Error_Handler();   
+  }   
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK3|RCC_CLOCKTYPE_HCLK    
+                              |RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1    
+                              |RCC_CLOCKTYPE_PCLK2;    
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;    
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;   
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;    
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;    
+  RCC_ClkInitStruct.AHBCLK3Divider = RCC_SYSCLK_DIV1;    
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)    
+  {   
+    Error_Handler();   
+  }    
+}    
+static void MX_USART1_UART_Init(void)   
+{   
+  huart1.Instance = USART1;    
+  huart1.Init.BaudRate = 9600;    
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;   
+  huart1.Init.StopBits = UART_STOPBITS_1;     
+  huart1.Init.Parity = UART_PARITY_NONE;   
+  huart1.Init.Mode = UART_MODE_TX_RX;   
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;   
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;    
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;   
+  huart1.Init.ClockPrescaler = UART_PRESCALER_DIV1;   
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;    
+  if (HAL_UART_Init(&huart1) != HAL_OK)    
+  {    
+    Error_Handler();    
+  }     
+  if (HAL_UARTEx_SetTxFifoThreshold(&huart1, UART_TXFIFO_THRESHOLD_1_8) != HAL_OK)    
+  {    
+    Error_Handler();    
+  }    
+  if (HAL_UARTEx_SetRxFifoThreshold(&huart1, UART_RXFIFO_THRESHOLD_1_8) != HAL_OK)    
+  {    
+    Error_Handler();    
+  }    
+  if (HAL_UARTEx_DisableFifoMode(&huart1) != HAL_OK)    
+  {    
+    Error_Handler();    
+  }   
+}    
+static void MX_GPIO_Init(void)    
+{    
+  GPIO_InitTypeDef GPIO_InitStruct = {0};   
+  __HAL_RCC_GPIOB_CLK_ENABLE();   
+  __HAL_RCC_GPIOA_CLK_ENABLE();    
+  GPIO_InitStruct.Pin = GPIO_PIN_6;   
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;    
+  GPIO_InitStruct.Pull = GPIO_PULLUP;    
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);    
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);    
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);     
+}    
+void Error_Handler(void)   
+{    
+  __disable_irq();   
+  while (1)   
+  {   
+  }   
+}    
+#ifdef  USE_FULL_ASSERT    
+void assert_failed(uint8_t *file, uint32_t line)    
+{   
+}    
+#endif   
 
 
 
 ## Output screen shots of serial port utility   :
+![image](https://github.com/srinivasanvaiyali/EXPERIMENT--04-INTERUPT-GENRATION-USING-SENSOR-AND-VISUALIZING-USING-SERIAL-MONITOR/assets/145117665/95665af5-aa87-49f0-81b2-f7aca42aa94c)
+
  
  
  ## Circuit board :
+ ![image](https://github.com/srinivasanvaiyali/EXPERIMENT--04-INTERUPT-GENRATION-USING-SENSOR-AND-VISUALIZING-USING-SERIAL-MONITOR/assets/145117665/482de169-8e75-4cf2-b4d8-23428bc0488d)
+
  
  
  
